@@ -96,8 +96,8 @@ export const conversations: Conversation[] = [
 ];
 
 export const settings = {
-  companyName: 'TTMKT AI',
-  botName: 'Ami',
+  companyName: 'TTHUB VIỆT NAM',
+  botName: 'TTHUB',
   welcomeMessage: 'Chào anh/chị, em là trợ lý AI. Em có thể hỗ trợ thông tin sản phẩm, chính sách và nhận nhu cầu tư vấn.',
   fallbackMessage:
     'Em chưa chắc thông tin này. Anh/chị để lại số điện thoại, bên em sẽ liên hệ tư vấn ngay nhé.',
