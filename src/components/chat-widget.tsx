@@ -8,8 +8,31 @@ type Message = {
   content: string;
 };
 
-export function ChatWidget() {
-  const [open, setOpen] = useState(true);
+function renderLinkedText(text: string) {
+  const urlRegex = /(https?:\/\/[^\s]+)/g;
+  const parts = text.split(urlRegex);
+
+  return parts.map((part, index) => {
+    if (urlRegex.test(part)) {
+      return (
+        <a
+          key={index}
+          href={part}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="break-all font-medium text-blue-600 underline"
+        >
+          {part}
+        </a>
+      );
+    }
+
+    return <span key={index}>{part}</span>;
+  });
+}
+
+export function ChatWidget({ embedded = false }: { embedded?: boolean }) {
+  const [open, setOpen] = useState(embedded ? true : true);
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState<Message[]>([
     { role: 'assistant', content: settings.welcomeMessage },
@@ -47,33 +70,39 @@ export function ChatWidget() {
     }
   }
 
+  const shellClass = embedded
+    ? 'flex h-full w-full flex-col overflow-hidden rounded-none border-0 bg-white shadow-none'
+    : 'overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl';
+
   return (
-    <div className="fixed right-6 bottom-6 z-50 w-[360px] max-w-[calc(100vw-24px)]">
-      <button
-        onClick={() => setOpen((v) => !v)}
-        className="mb-3 ml-auto flex rounded-full bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-lg"
-      >
-        {open ? 'Thu gọn chat' : 'Mở chat AI'}
-      </button>
+    <div className={embedded ? 'h-full w-full' : 'fixed right-6 bottom-6 z-50 w-[360px] max-w-[calc(100vw-24px)]'}>
+      {!embedded && (
+        <button
+          onClick={() => setOpen((v) => !v)}
+          className="mb-3 ml-auto flex rounded-full bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-lg"
+        >
+          {open ? 'Thu gọn chat' : 'Mở chat AI'}
+        </button>
+      )}
 
       {open && (
-        <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl">
+        <div className={shellClass}>
           <div className="bg-slate-900 px-4 py-3 text-white">
             <p className="text-sm font-semibold">{settings.botName} · AI Customer Care</p>
-            <p className="text-xs text-slate-300">Trực 24/7 · Thu lead · Handoff</p>
+            <p className="text-xs text-slate-300">Trực 24/7 · Tư vấn sản phẩm · Handoff</p>
           </div>
 
-          <div className="flex h-[400px] flex-col gap-3 overflow-y-auto bg-slate-50 p-4">
+          <div className="flex flex-1 flex-col gap-3 overflow-y-auto bg-slate-50 p-4">
             {messages.map((message, index) => (
               <div
                 key={index}
-                className={`max-w-[85%] rounded-2xl px-4 py-3 text-sm leading-6 ${
+                className={`max-w-[88%] rounded-2xl px-4 py-3 text-sm leading-7 whitespace-pre-wrap ${
                   message.role === 'assistant'
                     ? 'bg-white text-slate-800 shadow-sm'
                     : 'ml-auto bg-indigo-600 text-white'
                 }`}
               >
-                {message.content}
+                {renderLinkedText(message.content)}
               </div>
             ))}
             {loading && (
